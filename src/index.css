@@ -1,0 +1,159 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: hsl(0, 0%, 100%); /* White */
+    --foreground: hsl(240, 10%, 3.9%); /* Dark text color */
+    --card: hsl(0, 0%, 100%); /* White */
+    --card-foreground: hsl(240, 10%, 3.9%); /* Dark text color */
+    --popover: hsl(0, 0%, 100%); /* White */
+    --popover-foreground: hsl(240, 10%, 3.9%); /* Dark text color */
+    --primary: hsl(142.1, 76.2%, 36.3%); /* Primary color */
+    --primary-foreground: hsl(355.7, 100%, 97.3%); /* Light text color */
+    --secondary: hsl(240, 4.8%, 95.9%); /* Light gray */
+    --secondary-foreground: hsl(240, 5.9%, 10%); /* Dark text color */
+    --muted: hsl(240, 4.8%, 95.9%); /* Light gray */
+    --muted-foreground: hsl(240, 3.8%, 46.1%); /* Darker gray */
+    --accent: hsl(240, 4.8%, 95.9%); /* Light gray */
+    --accent-foreground: hsl(240, 5.9%, 10%); /* Dark text color */
+    --destructive: hsl(0, 84.2%, 60.2%); /* Red */
+    --destructive-foreground: hsl(0, 0%, 98%); /* Light text color */
+    --border: hsl(240, 5.9%, 90%); /* Light gray */
+    --input: hsl(240, 5.9%, 90%); /* Light gray */
+    --ring: hsl(142.1, 76.2%, 36.3%); /* Primary color */
+    --radius: 0.5rem; /* Border radius */
+    --green-500: #22c55e;
+    --back:white;
+    --bgac:hsl(240, 4.8%, 95.9%);
+  }
+
+  .dark {
+    --background: hsl(20, 14.3%, 4.1%); /* Dark background */
+    --foreground: hsl(0, 0%, 95%); /* Light text color */
+    --card: hsl(24, 9.8%, 10%); /* Dark card background */
+    --card-foreground: hsl(0, 0%, 95%); /* Light text color */
+    --popover: hsl(240, 10%, 10%); /* Darker background for popover */
+    --popover-foreground: hsl(0, 0%, 95%); /* Light text color for popover */
+    --primary: hsl(142.1, 70.6%, 45.3%); /* Darker primary color */
+    --primary-foreground: hsl(144.9, 80.4%, 10%); /* Dark text color */
+    --secondary: hsl(240, 3.7%, 15.9%); /* Darker secondary color */
+    --secondary-foreground: hsl(0, 0%, 98%); /* Light text color */
+    --muted: hsl(0, 0%, 15%); /* Darker muted color */
+    --muted-foreground: hsl(240, 5%, 64.9%); /* Light gray */
+    --accent: hsl(12, 6.5%, 15.1%); /* Darker accent color */
+    --accent-foreground: hsl(0, 0%, 98%); /* Light text color */
+    --destructive: hsl(0, 62.8%, 30.6%); /* Darker destructive color */
+    --destructive-foreground: hsl(0, 85.7%, 97.3%); /* Light text color */
+    --border: hsl(240, 3.7%, 15.9%); /* Darker border color */
+    --input: hsl(240, 3.7%, 15.9%); /* Darker input color */
+    --ring: hsl(142.4, 71.8%, 29.2%); /* Darker ring color */
+    --back:black;
+    --bgac:hsl(240, 3.7%, 15.9%);
+  }
+}
+/* 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .chat-bubble-received {
+    @apply bg-secondary text-secondary-foreground p-3 rounded-2xl rounded-tl-none max-w-xs;
+  }
+  
+  .chat-bubble-sent {
+    @apply bg-primary text-primary-foreground p-3 rounded-2xl rounded-tr-none max-w-xs;
+  }
+  
+  .avatar-online:after {
+    content: '';
+    @apply h-3 w-3 absolute bottom-0 right-0 rounded-full bg-green-500 border-2 border-background;
+  }
+} */
+
+
+@layer base {
+  * {
+    border: var(--border)
+  }
+  body {
+    background: var(--background);
+    color:var(--foreground);
+  }
+} 
+
+@layer components {
+  .chat-bubble-received {
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+    padding: 12px;
+    border-radius: var(--radius);
+    border-top-right-radius: 0;
+    max-width: 20rem;
+  }
+  
+  .chat-bubble-sent {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    padding: 12px;
+    border-radius: var(--radius);
+    border-top-left-radius: 0;
+    max-width: 20rem;
+  }
+  
+  .avatar-online:after {
+    content: '';
+    height: 12px;
+    width: 12px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    border: 2px solid var(--background);
+    background: var(--green-500);
+    border-radius: 50%;
+  } 
+}
+
+
+.bg-popover{
+  background-color: var(--back);
+}
+
+
+.inpufo input:focus~label,
+.inpufo input:valid~label{
+  top: -1px;
+  transition: 0.3s all ;
+  background: transparent;
+  z-index: 50;
+}
+
+
+
+
+.scrollthumb::-webkit-scrollbar{
+  background-color: transparent;
+  width: 10px;
+}
+
+
+.scrollthumb::-webkit-scrollbar-thumb{
+  background-color: #3c3737;
+  border-radius: 22px;
+  width: 5px;
+}
+
+
+.scrollthumb::-webkit-scrollbar-thumb:hover{
+  background-color: #2c2828;
+}
+
+
+.scrollthumbmob::-webkit-scrollbar{
+  background-color: transparent;
+}
