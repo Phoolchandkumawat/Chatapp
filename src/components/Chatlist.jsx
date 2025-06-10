@@ -58,15 +58,51 @@ function Chatlist({searchTerm, activeConversation, isMobile, onToggleMobileSideb
     const [activeUser, setActiveUser] = useState(false)
     const [allChat, setAllChat] = useState([])
     const [friend, setFriend] = useState([])
+    const dataChange = useSelector(state=> state.profile)
     const filteredConversations = friend.filter(convo =>
         convo.user['display_name'].toLowerCase().includes(searchTerm.toLowerCase())
       );
 
       const dispatch = useDispatch()
-
+      
       const userdataid = useSelector((state)=> state.users.user.id)
+      
+      const userUnread = useSelector(state => state.profile)
+
+      useEffect(()=>{
+        console.log("feslf")
+        console.log("fsdf",userUnread)
+        const ids = filteredConversations[0]?.user.user_id
+        const userupdates = userUnread.filter((data)=> data.id == ids && data.newData.is_read == false && data.newData.sender_id == ids)
+        console.log("dslfjs", userupdates)
+        console.log("userid", filteredConversations[0]?.user["user_id"])
+    
+      },[userUnread])
+
+      useEffect(()=>{
+        // async function thisss(){
+        //   try {
+        //     const res = await supaConfig.subscribeSidebar({setMessages:(newMessages) =>setAllChat(newMessages)})
+        //     // console.log(res)
+        //   } catch (error) {
+            
+        //   }
+        // }
+        // thisss()
+        console.log(dataChange)
+        console.log(allChat)
+        console.log(dataChange.filter((data)=> data.id).length)
+      },[allChat])
+
+
+      useEffect(()=>{
+        console.log("sliderData Change ", dataChange)
+        // console.log(dataChange)
+        // console.log(dataChange.filter((data)=> data.id == "141b0462-8d2e-4dbf-9954-7699e111be4b" && data.newData.is_read== false).length)
+      },[dataChange])
 
     useEffect(()=>{
+
         function sentuserid (){
             dispatch(setchatuser(activeUser))
           }
@@ -90,7 +126,7 @@ function Chatlist({searchTerm, activeConversation, isMobile, onToggleMobileSideb
               <ConversationItem
                 key={conversation.user["user_id"]}
                 {...conversation}
-                unreadCount={conversation.userreadMessage}
+                unreadCount={conversation.userreadMessage + dataChange.filter((data)=> data.id == conversation.user["user_id"] && data.newData.is_read== false).length}
                 id={conversation.user["user_id"]}
                 name={conversation.user['display_name']}
                 lastMessage={conversation.lastMessage["content"]}

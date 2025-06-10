@@ -14,13 +14,14 @@ function CheckUser ({ details = "notpage", children }) {
         const check = async () => {
             if (navigator.onLine) {
                 try {
-                    const user = await authService.getCurrentUser ();
+                    const user = await authService.getCurrentUser();
                     if (user.data.user) {
                         setIsLoggedIn(true);
                         const userData = await authService.fetchUserProfile();
                         dispatch(setusers({ user: user.data.user, display: userData }));
                     } else {
                         setIsLoggedIn(false);
+                        navigate('/home')
                     }
                 } catch (error) {
                     console.log(error);
@@ -32,29 +33,26 @@ function CheckUser ({ details = "notpage", children }) {
             } else {
                 setLoading(false);
                 setIsLoggedIn(false);
-                console.log("User  is offline");
+                navigate('/offline')
             }
         };
 
         check();
-    }, [navigate, dispatch]); // Removed isLoggedIn from dependencies
+    }, [navigate, dispatch]);
+
+    useEffect(() => {
+        if (!loading) {
+            if (details === "userPage" && !isLoggedIn) {
+                navigate('/login');
+            } else if (details !== "userPage" && isLoggedIn) {
+                navigate('/');
+            }
+        }
+    }, [loading, isLoggedIn, details, navigate]);
 
     if (loading) {
-        return <div>Loading...</div>; // You can replace this with a loading spinner or similar
-    }
-
-    // Handle navigation after loading is complete
-    if (details === "userPage") {
-        if (!isLoggedIn) {
-            navigate('/login');
-            return null; // Prevent rendering children if navigating
-        }
-    } else {
-        if (isLoggedIn) {
-            navigate('/');
-            return null; // Prevent rendering children if navigating
-        }
-    }
+        return <div>Loading...</div>;
+    } 
 
     return children; // Render children if no navigation is needed
 }

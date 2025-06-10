@@ -31,7 +31,7 @@ const CONVERSATIONS = [
 const Index = () => {
   const [activeConversation, setActiveConversation] = useState("2");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const userdataid = useSelector((state)=> state?.users.user.id)
+  // const userdataid = useSelector((state)=> state?.users.user.id)
   const currentUser = useSelector((state)=> state.users)
   const isMobile = useIsMobile();
   const userChatData = useSelector((status) => status.chat)

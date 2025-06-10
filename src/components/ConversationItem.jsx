@@ -20,6 +20,7 @@ export function ConversationItem({
 
   const [allchat, setAllChat] = useState([])
   const [allchatM, setAllChatM] = useState([])
+  const [update, setupdate] = useState(0)
 
   const userdataid = useSelector((state)=> state.users.user.id)
 
@@ -29,16 +30,13 @@ export function ConversationItem({
       try {
         const maasga = await supaConfig.getMessages({userId:userdataid, friendId:id})
         setAllChatM(maasga)
-        console.log(maasga)
-        const massagsecount = await supaConfig.subscribeToMessages({userId:userdataid, friendId:id, setMessages:(newMessages) =>{setAllChat(newMessages)}})
       } catch (error) {
         
       }
-    }
-    // setAllChatM((pre)=>[...pre,allchat]) 
+    } 
     getsub()  
-    console.log(allchat)
   },[allchat])
+
 
   return (
     <div 

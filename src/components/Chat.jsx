@@ -7,6 +7,7 @@ import { useIsMobile } from "../hooks/use-mobile";
 import { useSelector } from "react-redux";
 import supaConfig from "../supabase/supabaseconfi";
 import { useInView } from "react-intersection-observer";
+import { useDispatch } from 'react-redux';
 
 
 export function Chat({ conversation, currentUser, onToggleSidebar, issidebaropen }) {
@@ -19,6 +20,7 @@ export function Chat({ conversation, currentUser, onToggleSidebar, issidebaropen
   const userdataid = useSelector((state)=> state.users.user.id)
   const userName = useSelector((state)=> state.users.display["display_name"])
   const readSetRef = useRef(new Set());
+  const dispatch = useDispatch();
   const { ref, inView, entry } = useInView({
     /* Optional options */
     threshold: 0,
@@ -44,7 +46,7 @@ export function Chat({ conversation, currentUser, onToggleSidebar, issidebaropen
   useEffect(() => {
     // Scroll to the bottom of the chat
     // Function to fetch initial messages
-    console.log('useEffect triggered');
+    console.log(userdataid, currentChatId)
     async function getData() {
         try {
             const res = await supaConfig.getMessages({ userId: userdataid, friendId: currentChatId });
@@ -80,7 +82,7 @@ const messageRef = useRef(null)
   useEffect(() => {
     async function getdatasss() {
       try {
-        const subscription = await supaConfig.subscribeToMessages({userId:userdataid, friendId:currentChatId, setMessages:(newMessages) =>{setmessage(newMessages)}});
+        const subscription = await supaConfig.subscribeToMessages({userId:userdataid, friendId:currentChatId, setMessages:(newMessages) =>{setmessage(newMessages)}, dispatch:dispatch});
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
         
       } catch (error) {
