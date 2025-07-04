@@ -13,6 +13,7 @@ import CheckUser from "./CheckUser/Checkuser";
 import {Store} from './Store/Store'
 import { Provider } from "react-redux";
 import Loading from "./components/Loading";
+import Offline from "./components/Offline";
 
 
 const queryClient = new QueryClient();
@@ -28,10 +29,11 @@ const App = () => (
             <Routes>
               <Route path="/" element={<CheckUser details="userPage"><Index/></CheckUser>}/>
               <Route path="*" element={<NotFound />} />
-              <Route path="/home" element={<CheckUser><LandingPage/></CheckUser>}/>
+              <Route path="/home" element={<LandingPage/>}/>
               <Route path="/login" element={<CheckUser><Login/></CheckUser>} />
               <Route path="/signup" element={<CheckUser><Signup/></CheckUser>} />
               <Route path="/loading" element={<Loading/>}/>
+              <Route path="/offline" element={<CheckUser><Offline/></CheckUser>}/>
             </Routes>
           </BrowserRouter>
         </TooltipProvider>

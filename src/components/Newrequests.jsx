@@ -13,9 +13,7 @@ function Newrequests() {
             try {
                 const friends = await supaConfig.getPendingFriendRequests({userId:userid})
                 setRequests(friends)
-                if(friends){
-                    console.log(friends)
-                }
+                
             } catch (error) {
                 
             }

@@ -16,6 +16,7 @@ import Chatlist from "./Chatlist";
 import Friendsrequasts from "./Friendsrequasts";
 import Newrequests from "./Newrequests";
 import supaConfig from "../supabase/supabaseconfi";
+import ProfileSettings from "./ProfileSettings";
 
 // Sample data
 const conversations = [
@@ -85,8 +86,13 @@ export function Sidebar({
   const [isuserOnline, setIsuserOnline] = useState(false)
   const [notification, setNotification] = useState(false)
   const [notificationValue, setNotificationValue] = useState(false)
+  const [settingShow, setSettingShow] = useState(false)
+  const userUnread = useSelector(state => state.profile)
   const dispatch = useDispatch()
   const isMobile = useIsMobile();
+  const onclicksettings = ()=>{
+    setSettingShow(true)
+  }
 
   const filteredConversations = conversations.filter(convo =>
     convo.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -96,12 +102,15 @@ export function Sidebar({
 
   const userCurrent = useSelector(state => state.users)
 
+  
+
 
   useEffect(()=>{
+
     async function getuserddd(){
       try {
         const users = await supaConfig.getRecentChatUser({userId: userCurrent.user.id})
-        console.log(users)
+        // console.log(users)
       } catch (error) {
         
       }
@@ -113,7 +122,7 @@ export function Sidebar({
     async function getchatUser(){
       try {
         const datadd = await supaConfig.fetchConversationFriends({userId:userdataid})
-        console.log("it data chat",datadd)
+        // console.log("it data chat",datadd)
       } catch (error) {
         
       }
@@ -126,13 +135,19 @@ export function Sidebar({
 
 
   },[activeUser, onSearch])
+  useEffect(()=>{
+    // console.log("sidebar",userUnread)
+    // const userupdates = userUnread.filter((data)=> data.id == id)
+    // console.log("dslfjs", userupdates)
+
+  },[userUnread]) 
   return (
     <div className={cn(
       "relative flex flex-col h-full bg-[var(--card)] border-r p-3",
       isMobile && "fixed inset-y-0 left-0 z-40 min-w-80 w-full transition-transform duration-300 ease-in-out transform",
       isMobile && (isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full")
     )}>
-      <div className={`relative w-full h-full ${onSearch ? "hidden" : 'flex flex-col'}`}>
+      <div className={`relative w-full h-full ${settingShow ? "hidden" : onSearch ? "hidden" : 'flex flex-col'}`}>
         <div className="flex items-center justify-between p-4 border-b ">
           <div className="flex items-center gap-2 w-[180px] min-w-[180px] max-w-[180px]">
             <Button variant="ghost" size="icon" className="md:hidden hover:bg-[var(--accent)] cursor-pointer" onClick={onToggleMobileSidebar}>
@@ -144,7 +159,7 @@ export function Sidebar({
             <Bell onClick={()=> setNotification(true)} className="h-9 w-9 text-muted-foreground p-2 hover:bg-[var(--accent)] rounded-full cursor-pointer hover:text-foreground transition-colors" />
             <ThemeSwitcher />
             <UserAvatar
-              src={currentUser.display["src"] && ""}
+              src={currentUser?.display["src"] || ""}
               fallback={currentUser.display['display_name'] || "username"}
               isOnline={isuserOnline}
               size="sm"
@@ -225,12 +240,17 @@ export function Sidebar({
                 <p className="text-xs text-muted-foreground">Online</p>
               </div>
             </div>
-            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
-              <Settings className="h-5 w-5" />
+            <Button variant="ghost" size="icon" onClick={onclicksettings} className="h-9 w-9 cursor-pointer rounded-full">
+              <Settings className="h-5 w-5 cursor-pointer" />
             </Button>
           </div>
         </div>
       </div>
+
+      <div className={`${settingShow ? "flex":"hidden"} `}>
+        <ProfileSettings setShow={setSettingShow}/>
+      </div>
+      
 
       <div className={`${onSearch ? "flex flex-col": "hidden"} relative w-full h-full`}>
         <div className="flex items-center justify-between p-4 border-b">
@@ -286,8 +306,9 @@ export function Sidebar({
                 <p className="text-xs text-muted-foreground">Online</p>
               </div>
             </div>
-            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
-              <Settings className="h-5 w-5" />
+            <Button variant="ghost" size="icon" onClick={onclicksettings} className="h-9 w-9 rounded-full cursor-pointer">
+              <Settings className="h-5 w-5 " />
+              {/* <ProfileSettings/> */}
             </Button>
           </div>
         </div>

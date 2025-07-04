@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import Appconf from './Appconf';
+import { setProfiles } from '../Store/slices/ChatSlices';
 
 export class Config {
     supabase;
@@ -140,7 +141,7 @@ export class Config {
                 .eq('friend_id', userId)
                 .eq('status', 'pending');   
 
-                // console.log("Query Result:", { data, error })
+                console.log("Query Result:", { data, error }, userId)
     
             if (error) throw error;
             return data; // Returns an array of pending requests
@@ -164,9 +165,9 @@ export class Config {
             .update({ status: 'accepted'})
             .eq('user_id', friendId)
             .eq('friend_id', userId);
-            // console.log("Data:", data);
-            // console.log("Error:", error);
-            // console.log("Status:", status);
+            console.log("Data:", data);
+            console.log("Error:", error);
+            console.log("Status:", status);
             if (error) throw error;
             return data;
         } catch (error) {
@@ -220,50 +221,87 @@ export class Config {
     }
 
 
-    async subscribeToMessages({userId, friendId, setMessages}) {
-    try {
-        const subscription = this.supabase
-        .channel('messages')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
-            console.log('New message inserted!', payload);
-            if (
-                (payload.new.sender_id === userId && payload.new.receiver_id === friendId) ||
-                (payload.new.sender_id === friendId && payload.new.receiver_id === userId)
-            ) {
-                console.log('New message received!', payload); 
-                setMessages(prevMessages =>{
-                    const messageExists = prevMessages.some(msg => msg.id === payload.new.id);
-                    if (!messageExists) {
-                        return [...prevMessages, payload.new];
+    async subscribeToMessages({ userId, friendId, setMessages, dispatch }) {
+        try {
+            const subscription = this.supabase
+                .channel('messages')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+                    console.log('New message inserted!', payload);
+                    if (
+                        (payload.new.sender_id === userId && payload.new.receiver_id === friendId) ||
+                        (payload.new.sender_id === friendId && payload.new.receiver_id === userId)
+                    ) {
+                        console.log('New message received!', payload);
+                        dispatch(setProfiles({id:payload.new.receiver_id, newData:payload.new}))
+                        setMessages(prevMessages => {
+                            const messageExists = prevMessages.some(msg => msg.id === payload.new.id);
+                            if (!messageExists) {
+                                return [...prevMessages, payload.new];
+                            }
+                            return prevMessages; // Always return the previous state if no new message is added
+                        });
                     }
-                return prevMessages
-            })
-        }
-        })
-        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages' }, payload => {
-            console.log('dd')
-            if (
-                (payload.new.sender_id === userId && payload.new.receiver_id === friendId) ||
-                (payload.new.sender_id === friendId && payload.new.receiver_id === userId)
-            ) {
-                console.log('New message received!', payload); 
-                setMessages(prevMessages =>{
-                    const messageExists = prevMessages.some(msg => msg.id === payload.new.id);
-                    if (!messageExists) {
-                        return [...prevMessages, payload.new];
+                })
+                .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages' }, payload => {
+                    console.log('Message updated!', payload);
+                    if (
+                        (payload.new.sender_id === userId && payload.new.receiver_id === friendId) ||
+                        (payload.new.sender_id === friendId && payload.new.receiver_id === userId)
+                    ) {
+                        console.log('Message updated!', payload.new);
+                        dispatch(setProfiles({id:payload.new.receiver_id, newData:payload.new}))
+                        
+                        setMessages(prevMessages => {
+                            return prevMessages.map(msg => 
+                                msg.id === payload.new.id ? { ...msg, ...payload.new } : msg
+                            );
+                        });
                     }
-                return prevMessages
-            })
+                })
+                .subscribe();
+    
+            return subscription;
+        } catch (error) {
+            console.error("Error subscribing to messages:", error);
         }
-        })
-        .subscribe();
-
-        return subscription
-    } catch (error) {
-        console.log(error,":::errro at sub")
     }
     
+
+    async subscribeSidebar({setMessages}){
+        try {
+            const subscription = this.supabase
+                .channel('messages')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+                    console.log('New message inserted!', payload);
+                    setMessages(prevMessages => {
+                        const messageExists = prevMessages.some(msg => msg.id === payload.new.id);
+                        if (!messageExists) {
+                            return [...prevMessages, payload.new];
+                        }
+                        return prevMessages; // Always return the previous state if no new message is added
+                    });
+                    
+                })
+                .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages' }, payload => {
+                    console.log('Message updated!', payload);
+                    setMessages(prev=>{
+                        console.log(prev,"ustsprev")
+                        return prev
+                    })
+                    // setMessages(prevMessages => {
+                    //     return prevMessages.map(msg => 
+                    //         msg.id === payload.new.id ? { ...msg, ...payload.new } : msg
+                    //     );
+                    // });
+                })  
+                .subscribe();
+    
+            return subscription;
+        } catch (error) {
+            console.error("Error subscribing to messages:", error);
+        }
     }
+    
 
 
     async fetchConversationFriends({ userId }) {
@@ -310,7 +348,7 @@ export class Config {
               .limit(1);
               if (lastMessageError) throw lastMessageError;
               
-              console.log(lastMessageData)
+            //   console.log(lastMessageData)
             const lastMessage = lastMessageData.length > 0 ? lastMessageData[0] : null;
                     const chatunread = await this.getMessages({userId:userId, friendId:friendId}).then((res)=>{const data = res.filter((ids)=> ids.sender_id !== userId) ; return data.filter((mes)=> mes["is_read"] == false)})
             // Find the user details for the current friend
