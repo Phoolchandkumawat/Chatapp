@@ -20,8 +20,14 @@ function CheckUser ({ details = "notpage", children }) {
                         const userData = await authService.fetchUserProfile();
                         dispatch(setusers({ user: user.data.user, display: userData }));
                     } else {
-                        setIsLoggedIn(false);
-                        navigate('/home')
+                        if(details == "notpage"){
+                            setLoading(false);
+                            setIsLoggedIn(false);
+                            return
+                        } else{
+                            setIsLoggedIn(false);
+                            navigate('/home')
+                        }
                     }
                 } catch (error) {
                     console.log(error);
@@ -31,9 +37,17 @@ function CheckUser ({ details = "notpage", children }) {
                     setLoading(false);
                 }
             } else {
-                setLoading(false);
-                setIsLoggedIn(false);
-                navigate('/offline')
+                if(details == "notpage"){
+                    setLoading(false);
+                    setIsLoggedIn(false);
+                    return
+                } else{
+                    setLoading(false);
+                    setIsLoggedIn(false);
+                    navigate('/login')
+
+                }
+                // navigate('/offline')
             }
         };
 
